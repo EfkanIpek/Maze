@@ -5,7 +5,7 @@ export class Maze {
 
     constructor() {
         this.initSelector()
-        this.initButton()
+        this.initButtons()
         let size = document.getElementById('mazeSizes');
         let difficulty = document.getElementById('mazeDifficulty');
         let mazeData = data[size.value][difficulty.value]
@@ -37,12 +37,27 @@ export class Maze {
         div1.onchange = () => this.onChange()
     }
 
-    initButton() {
+    initButtons() {
         const button = document.getElementById('dfsiSolve')
-        button.onclick = () => {
-            let solution = DFS_iterative(this, this.cells.find(cell => cell.entrance))
-            this.displaySolution(solution);
+        button.onclick = async () => {
+            let ans = DFS_iterative(this, this.cells.find(cell => cell.entrance))
+            console.log(ans)
+            await this.displayPath(ans.visited, 'red');
+            await this.displayPath(ans.solution, 'green');
         }
+        const buttonDfsRecursive = document.getElementById('dfsrSolve')
+        buttonDfsRecursive.onclick = async () => {
+            let ans = DFS_recursive(this, this.cells.find(cell => cell.entrance))
+            await this.displayPath(ans, 'yellow')
+        }
+        const buttonBFS = document.getElementById('bfsSolve')
+        buttonBFS.onclick = async () => {
+            let ans = BFS_iterative(this, this.cells.find(cell => cell.entrance))
+            console.log(ans)
+            await this.displayPath(ans.visited, 'red');
+            await this.displayPath(ans.solution, 'green');
+        }
+
     }
 
     onChange() {
@@ -56,23 +71,28 @@ export class Maze {
     }
 
     findNeighbor(cell) {
-        let neighbors = this.cells.filter(potentialNeighbor =>
+        return this.cells.filter(potentialNeighbor =>
             (cell.posX === potentialNeighbor.posX + 1 && cell.posY === potentialNeighbor.posY && !cell.topWall)
             | (cell.posX === potentialNeighbor.posX - 1 && cell.posY === potentialNeighbor.posY && !cell.botWall)
             | (cell.posX === potentialNeighbor.posX && cell.posY === potentialNeighbor.posY + 1 && !cell.leftWall)
             | (cell.posX === potentialNeighbor.posX && cell.posY === potentialNeighbor.posY - 1 && !cell.rightWall)
         )
-        console.log('neighbors of ', cell, " are ", neighbors)
-        return neighbors
 
     }
 
-    displaySolution(solution) {
-        solution.forEach((cell, index) => {
-            setTimeout(() => {
-                let cellDiv = document.getElementById(`cell${cell.posX},${cell.posY}`)
-                cellDiv.style.backgroundColor = 'green'
-            }, 200 * index)
+    async displayPath(path, color) {
+        for (let cell of path) {
+            let cell1 = await this.highlightCell(cell)
+            let cellDiv = document.getElementById(`cell${cell1.posX},${cell1.posY}`)
+            cellDiv.style.backgroundColor = color
+        }
+    }
+
+    highlightCell(cell) {
+        return new Promise( (resolve) => {
+            setTimeout( () => {
+                resolve(cell);
+            }, 100)
         })
     }
 }

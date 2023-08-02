@@ -5,3 +5,4 @@ mazeInitializer.display()
 mazeInitializer.findNeighbor(mazeInitializer.cells[8])
 
 
+// console.log(DFS_iterative(mazeInitializer, mazeInitializer.cells[0]))

@@ -1,16 +1,37 @@
+function BFS_iterative(maze, cell) {
+    let allVisited = []
+    let queue = []
+    queue.push(cell)
+    while (queue.length !== 0) {
+        let current = queue.shift()
+        if (!current.visited) {
+            current.visited = true
+            allVisited.push(current)
+            if (current.exit) {
+                return {solution : pathFromOldestParent(current), visited : allVisited}
+            }
+            for (let cell of maze.findNeighbor(current)) {
+                if (!cell.visited) {
+                    cell.parent = current
+                    queue.push(cell)
+                }
+            }
+        }
+    }
+    return undefined;
+}
+
 function DFS_iterative(maze, cell) {
+    let allVisited = []
     let stack = []
     stack.push(cell)
-    let counter = 0
     while (stack.length !== 0) {
         let current = stack.pop()
         if (!current.visited) {
             current.visited = true
-            let cellDiv = document.getElementById(`cell${current.posX},${current.posY}`)
-            counter++
-            setTimeout( () => cellDiv.style.backgroundColor = 'red', 200 * counter )
+            allVisited.push(current)
             if (current.exit) {
-                return pathFromOldestParent(current)
+                return {solution : pathFromOldestParent(current), visited : allVisited}
             }
             for (let cell of maze.findNeighbor(current)) {
                 if (!cell.visited) {
@@ -21,6 +42,23 @@ function DFS_iterative(maze, cell) {
         }
     }
     return undefined;
+}
+
+function DFS_recursive(maze, cell) {
+    if (!cell.visited) {
+        cell.visited = true
+        if (cell.exit) {
+            return [cell]
+        }
+        for (let neighbor of maze.findNeighbor(cell)) {
+            let path = DFS_recursive(maze, neighbor)
+            if (path.length !== 0) {
+                path.unshift(neighbor)
+                return path
+            }
+        }
+    }
+    return []
 }
 
 
