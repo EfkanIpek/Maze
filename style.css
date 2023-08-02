@@ -1,0 +1,47 @@
+#page {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+
+#maze {
+    display: flex;
+    flex-wrap: wrap;
+    height: 90vh;
+    width: 90vh;
+}
+
+.cell {
+    background-color: lightgrey;
+    /*width: 100px;*/
+    /*height: 100px;*/
+    box-sizing: border-box;
+    /*border: solid black;*/
+    border: 1px dotted;
+    border-collapse: collapse;
+    /*margin: -1px;*/
+}
+
+.top {
+    border-top: solid black;
+}
+
+.right {
+    border-right: solid black;
+}
+
+.bot {
+    border-bottom: solid black;
+}
+
+.left {
+    border-left: solid black;
+}
+
+.start {
+    background-color: green;
+}
+
+.end {
+    background-color: red;
+}
