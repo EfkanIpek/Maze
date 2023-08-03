@@ -92,7 +92,7 @@ export class Maze {
         return new Promise( (resolve) => {
             setTimeout( () => {
                 resolve(cell);
-            }, 100)
+            }, 1)
         })
     }
 }

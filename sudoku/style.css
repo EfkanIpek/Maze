@@ -1,0 +1,14 @@
+#sudoku {
+    display: flex;
+    flex-wrap: wrap;
+    width: 120px;
+    height: 120px;
+}
+
+.cell {
+    border: 1px black solid;
+    box-sizing: border-box;
+    width: 30px;
+    height: 30px;
+    text-align: center;
+}
