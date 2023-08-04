@@ -4,18 +4,36 @@ export class Sudoku {
     cells = [];
     subSquares = []
 
-    constructor(rawData) {
-        rawData.forEach((number, index) => {
-            let content = number;
-            let row = Math.floor(index / Math.sqrt(rawData.length))
-            let column = index % (Math.sqrt(rawData.length))
-            this.cells.push(new Cell(content, row, column))
-        })
-        this.subSquares = this.getSubSquares()
+    constructor(rawData, cells) {
+        if (rawData) {
+            rawData.forEach((number, index) => {
+                let content = number;
+                let row = Math.floor(index / Math.sqrt(rawData.length))
+                let column = index % (Math.sqrt(rawData.length))
+                this.cells.push(new Cell(content, row, column))
+            })
+            this.subSquares = this.getSubSquares()
+        }
+        if (cells) {
+            this.cells = []
+            this.subSquares = []
+            cells.forEach(cell => {
+                let value = JSON.parse(JSON.stringify(cell.value))
+                let row = JSON.parse(JSON.stringify(cell.row))
+                let column = JSON.parse(JSON.stringify(cell.column))
+                this.cells.push(new Cell(value, row, column))
+            })
+            this.subSquares = this.getSubSquares()
+        }
     }
 
     display() {
         const sudokuDiv = document.getElementById('sudoku')
+        let child = sudokuDiv.lastElementChild
+        while (child) {
+            sudokuDiv.removeChild(child)
+            child = sudokuDiv.lastElementChild
+        }
         sudokuDiv.style.width = Math.sqrt(this.cells.length) * 30 + "px"
         sudokuDiv.style.height = Math.sqrt(this.cells.length) * 30 + "px"
         this.cells.forEach(cell => {
@@ -23,20 +41,43 @@ export class Sudoku {
         })
     }
 
-    resolve() {
-        
+    isOver() {
+        return !this.cells
+            .map(c => c.value).includes(null)
     }
 
-    playAMove() {
+    playAMove(cell, number) {
+        cell.setValue(number)
+    }
+
+    nextLegalMove() {
         let freeCells = this.cells.filter( c => !c.value)
         for (let cell of freeCells) {
-            for (let i =0; i<10 ; i++) {
-                if (this.isLegalMove(cell, i)) {
-                    cell.setValue(i)
-
+            for (let value = 1; value< Math.sqrt(this.cells.length) +1 ; value++) {
+                if (this.isLegalMove(cell, value)) {
+                    return {cell , value}
                 }
             }
         }
+    }
+
+    allLegalMoves() {
+        let result = []
+        let freeCells = this.cells.filter( c => !c.value)
+        for (let cell of freeCells) {
+            let ans = {cell : null, values : []}
+            for (let value = 1; value<Math.sqrt(this.cells.length) +1 ; value++) {
+                if (this.isLegalMove(cell, value)) {
+                    ans.cell = cell
+                    ans.values.push(value)
+                    if (ans.values === 0) {
+                        return []
+                    }
+                }
+            }
+            result.push(ans)
+        }
+        return result
     }
 
     isLegalMove(cell, number) {
@@ -77,5 +118,18 @@ export class Sudoku {
             subSquares[Math.sqrt(size) * subSquareRaw + subSquareColumn].push(cell)
         }
         return subSquares
+    }
+
+    numberOfEmptyCells() {
+        return this.cells.filter(cell => !cell.value).length
+    }
+
+    deepCopy() {
+        let cellsCopy = JSON.parse(JSON.stringify(this.cells))
+        let subSquaresCopy = JSON.parse(JSON.stringify(this.subSquares))
+        let sudokuCopy = new Sudoku()
+        sudokuCopy.cells = cellsCopy
+        sudokuCopy.subSquares = subSquaresCopy
+        return sudokuCopy
     }
 }
